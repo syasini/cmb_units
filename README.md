@@ -20,7 +20,8 @@ dI = convert_units_of(dT, from_units="T", to_units="I",
                           is_differential=True)
 
 ```
-Depending on the input map and the given frequencies, the output `dI` will have the shape: (#frequency channels, #pixels). 
+Depending on the input map and the given frequencies, the output `dI` will have the shape: 
+(#frequency channels, #pixels). 
 
 
 The valid keywords for `from_unit` and `to_unit` are:
