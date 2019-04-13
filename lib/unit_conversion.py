@@ -20,6 +20,100 @@ k3_over_c2h2 = 6.66954097  # :[MJy/sr]
 c2_over_k = 65.096595  # :[K*GHz^2/MJy/sr]
 
 ##################################################
+#           conversion wrapper
+##################################################
+
+def convert_units_of(input_map,
+                     from_units="T",
+                     to_units="I",
+                     at_nu=217,
+                     with_map_avg=None,
+                     is_differential=True,
+                     verbose=True):
+    """
+    Parameters
+    ----------
+    input_map:
+        input map or pixel
+
+    from_units:
+        the units of input map. can be one of the keywords below:
+
+        "T" or: "T_cmb", "T_CMB", "K", "K_CMB";
+        "Tb" or: "T_RJ", "T_nu", "K_RJ";
+        "I" or: "I_nu", "MJy/sr"
+
+    to_units:
+        the units of the output map (can be "T", "T_b" or "I"); see above for
+        equivalent keywords
+
+    at_nu:
+        the observed frequency of the input map in **GHz** (can be an array for pixels)
+        the input can be a scalar (single frequency)
+        or a 1d list/np.ndarray (a range of frequencies)
+        The default value is 217 GHz
+
+    with_map_avg:
+        the average of the input map e.g. T_0 for a dT map or I_nu0 for dI_nu.
+        This is necessary for differential maps because the frequency function of the transformation
+        depends on the average. If using spherical harmonic monopole, make sure you divide by 2pi;
+        average=monopole/(2*np.sqrt(np.pi)
+
+    is_differential:
+        if True, the unit conversion is done for differential measurement.
+        e.g. dT to dI_nu etc.
+
+    verbose:
+        if True, print out the conversion type
+
+    Returns
+    -------
+        the original map/pixel in the units provided in "to_units" at frequency "at_nu"
+
+    """
+
+    # look up from_ and to_ from the dictionary and return the standard units
+    from_ = lookup(from_units)
+    to_ = lookup(to_units)
+
+    # check the dimensions of the frequency array
+    # if the input is a map (len(map) = npix) and more than one frequency is needed (n_freq),
+    # the shape of the frequency input should match (n_freq,npix)
+
+    if np.isscalar(input_map):
+        npix = 1
+    elif isinstance(input_map,(list,np.ndarray)):
+        npix = len(input_map)
+        input_map = np.array(input_map)
+    else:
+        raise TypeError("input_map must be either a scalar, list, or np.ndarray")
+
+    #the input frequency must be either a scalar or a 1d array
+    assert np.ndim(at_nu)<2
+
+    if np.isscalar(at_nu):
+        n_freq = 1
+    elif isinstance(at_nu, (list, np.ndarray)):
+        n_freq = len(at_nu)
+    else:
+        raise TypeError("at_nu (frequency) must be either a scalar, list, or np.ndarray")
+
+    # if the input is a map, promote the frequency array to a 2d matrix with the shape(n_freq, npix)
+    if (npix != 1) and (n_freq != 1):
+        at_nu = np.tensordot(at_nu, np.ones_like(input_map),axes=0)
+
+    if from_ == to_:
+        print("returning the original input.\n")
+        return input_map
+
+    # check if the conversion if for differential or absolute measurements
+    if is_differential:
+        return _convert_diff_unit_of(input_map, from_, to_, at_nu, with_map_avg, verbose)
+    else:
+        return _convert_abs_unit_of(input_map, from_, to_, at_nu, verbose)
+
+
+##################################################
 #               frequency functions
 ##################################################
 
@@ -212,7 +306,7 @@ def dT_bright2thermo(nu, T_b):
 
 
 ##################################################
-#              Conversion Wrappers
+#         T, Tb, & I Conversion Wrappers
 ##################################################
 
 # =================================
@@ -406,99 +500,6 @@ def lookup(unit_str):
     unit_synonym = [key for key, value in unit_dict.items() if unit_str in value][0]
 
     return unit_synonym
-
-# =================================
-#      main conversion wrapper
-# =================================
-
-def convert_units_of(input_map,
-                     from_units="T",
-                     to_units="I",
-                     at_nu=217,
-                     with_map_avg=None,
-                     is_differential=True,
-                     verbose=True):
-    """
-    Parameters
-    ----------
-    input_map:
-        input map or pixel
-
-    from_units:
-        the units of input map. can be one of the keywords below:
-
-        "T" or: "T_cmb", "T_CMB", "K", "K_CMB";
-        "Tb" or: "T_RJ", "T_nu", "K_RJ";
-        "I" or: "I_nu", "MJy/sr"
-
-    to_units:
-        the units of the output map (can be "T", "T_b" or "I"); see above for
-        equivalent keywords
-
-    at_nu:
-        the observed frequency of the input map in **GHz** (can be an array for pixels)
-        the input can be a scalar (single frequency)
-        or a 1d list/np.ndarray (a range of frequencies)
-        The default value is 217 GHz
-
-    with_map_avg:
-        the average of the input map e.g. T_0 for a dT map or I_nu0 for dI_nu.
-        This is necessary for differential maps because the frequency function of the transformation
-        depends on the average. If using spherical harmonic monopole, make sure you divide by 2pi;
-        average=monopole/(2*np.sqrt(np.pi)
-
-    is_differential:
-        if True, the unit conversion is done for differential measurement.
-        e.g. dT to dI_nu etc.
-
-    verbose:
-        if True, print out the conversion type
-
-    Returns
-    -------
-        the original map/pixel in the units provided in "to_units" at frequency "at_nu"
-
-    """
-
-    # look up from_ and to_ from the dictionary and return the standard units
-    from_ = lookup(from_units)
-    to_ = lookup(to_units)
-
-    # check the dimensions of the frequency array
-    # if the input is a map (len(map) = npix) and more than one frequency is needed (n_freq),
-    # the shape of the frequency input should match (n_freq,npix)
-
-    if np.isscalar(input_map):
-        npix = 1
-    elif isinstance(input_map,(list,np.ndarray)):
-        npix = len(input_map)
-        input_map = np.array(input_map)
-    else:
-        raise TypeError("input_map must be either a scalar, list, or np.ndarray")
-
-    #the input frequency must be either a scalar or a 1d array
-    assert np.ndim(at_nu)<2
-
-    if np.isscalar(at_nu):
-        n_freq = 1
-    elif isinstance(at_nu, (list, np.ndarray)):
-        n_freq = len(at_nu)
-    else:
-        raise TypeError("at_nu (frequency) must be either a scalar, list, or np.ndarray")
-
-    # if the input is a map, promote the frequency array to a 2d matrix with the shape(n_freq, npix)
-    if (npix != 1) and (n_freq != 1):
-        at_nu = np.tensordot(at_nu, np.ones_like(input_map),axes=0)
-
-    if from_ == to_:
-        print("returning the original input.\n")
-        return input_map
-
-    # check if the conversion if for differential or absolute measurements
-    if is_differential:
-        return _convert_diff_unit_of(input_map, from_, to_, at_nu, with_map_avg, verbose)
-    else:
-        return _convert_abs_unit_of(input_map, from_, to_, at_nu, verbose)
 
 
 if __name__ == "__main__":
