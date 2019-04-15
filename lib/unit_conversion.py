@@ -73,8 +73,8 @@ def convert_units_of(input_map,
     """
 
     # look up from_ and to_ from the dictionary and return the standard units
-    from_ = lookup(from_units)
-    to_ = lookup(to_units)
+    from_units = lookup(from_units)
+    to_units = lookup(to_units)
 
     # check the dimensions of the frequency array
     # if the input is a map (len(map) = npix) and more than one frequency is needed (n_freq),
@@ -102,15 +102,15 @@ def convert_units_of(input_map,
     if (npix != 1) and (n_freq != 1):
         at_nu = np.tensordot(at_nu, np.ones_like(input_map),axes=0)
 
-    if from_ == to_:
+    if from_units == to_units:
         print("returning the original input.\n")
         return input_map
 
     # check if the conversion if for differential or absolute measurements
     if is_differential:
-        return _convert_diff_unit_of(input_map, from_, to_, at_nu, with_map_avg, verbose)
+        return _convert_diff_unit_of(input_map, from_units, to_units, at_nu, with_map_avg, verbose)
     else:
-        return _convert_abs_unit_of(input_map, from_, to_, at_nu, verbose)
+        return _convert_abs_unit_of(input_map, from_units, to_units, at_nu, verbose)
 
 
 ##################################################
