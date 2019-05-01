@@ -405,7 +405,7 @@ def _convert_dI_2_dTb(nu, dI_nu, I_nu0=1, verbose=True):
     if verbose:
         print(converting_message("dI","dTb"))
     dI_ovr_I0 = dI_nu / I_nu0
-    dT_b = diff_bright_temp(nu, dI_nu, RJ=True) * dI_ovr_I0
+    dT_b = diff_bright_temp(nu, I_nu0, RJ=True) * dI_ovr_I0
     return dT_b
 
 # --------
