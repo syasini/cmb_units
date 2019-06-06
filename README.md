@@ -28,8 +28,8 @@ The valid keywords for `from_unit` and `to_unit` are:
 
 | Variable [units] | `keyword` | 
 | --- | --- |
-| Thermodynamic Temperature [K] | `"T", "T_cmb", "T_CMB", "K", "K_CMB"` | 
+| Brightness Temperature [K] | `"T", "T_b", "T_cmb", "T_CMB", "K", "K_CMB"` | 
 | Specific Intensity [MJy/sr] | `"I", "I_nu", "MJy/sr"` | 
-| Brightness Temperature [K_RJ] | `"Tb", "T_RJ", "T_nu", "K_RJ"`| 
+| Rayleigh_Jeans Temperature [K_RJ] | `"T_RJ", "T_rj", "s_nu", "K_RJ", "K_rj"`| 
         
  
