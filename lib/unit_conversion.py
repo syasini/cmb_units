@@ -498,7 +498,7 @@ def lookup(unit_str):
     """look up the input keyword in the dictionary and return the standard synonym"""
 
     unit_dict = {"T": ["T", "T_b", "T_cmb", "T_CMB", "K", "K_CMB"],
-                 "T_RJ": ["T_rj", "T_RJ", "s_nu", "K_RJ"],
+                 "T_RJ": ["T_rj", "T_RJ", "s_nu", "K_RJ", "K_rj"],
                  "I": ["I", "I_nu", "MJy/sr"]
                  }
 
