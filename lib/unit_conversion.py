@@ -126,7 +126,7 @@ def convert_units_of(input_map,
 # =================================
 
 # ---------------
-# T or T_b to I_nu
+# T or T_RJ to I_nu
 # ---------------
 
 def black_body(nu, T, RJ=False):
@@ -135,7 +135,7 @@ def black_body(nu, T, RJ=False):
 
     :param nu: observed frequency [GHz]
     :param T: thermodynamic temperature [K]
-    :param RJ: if True, input is brightness temperature
+    :param RJ: if True, input is RJ temperature
     :return: I_nu [MJy/sr]
     """
 
@@ -149,17 +149,17 @@ def black_body(nu, T, RJ=False):
 
 
 # -----------------
-# I_nu to T and T_b
+# I_nu to T and T_RJ
 # -----------------
 
 def bright_temp(nu, I_nu, RJ=False):
     """
     Thermodynamic temperature T [K] at frequency nu [GHz] for the observed intensity [MJy/sr]
-    if RJ==True, return brightness temperature
+    if RJ==True, return RJ temperature
 
     :param nu: observed frequency [GHz]
     :param I_nu: specific intensity [MJy/sr]
-    :param RJ: if True, output is brightness temperature
+    :param RJ: if True, output is RJ temperature
     :return: T [K]
     """
 
@@ -171,16 +171,16 @@ def bright_temp(nu, I_nu, RJ=False):
 
 
 # ---------
-# T to T_b
+# T to T_RJ
 # ---------
 
-def T_thermo2bright(nu, T):
+def T_bright2RJ(nu, T):
     """
-    brightness temperature T_b [K] at frequency nu [GHz] for a BB with temperature T
+    RJ temperature T_RJ [K] at frequency nu [GHz] for a BB with temperature T
 
     :param nu: observed frequency [GHz]
     :param T: thermodynamic temperature [K]
-    :return: T_b [K]
+    :return: T_RJ [K]
     """
 
     x = h_over_k * nu / T  # nu [GHz] ; t [#K]
@@ -192,18 +192,18 @@ def T_thermo2bright(nu, T):
 # T_b to T
 # ---------
 
-def T_bright2thermo(nu, T_b):
+def T_RJ2bright(nu, T_RJ):
     """
     thermodynamic temperature T [K] at frequency nu [GHz] for the observed brightness temperature T_b
 
     :param nu: observed frequency [GHz]
-    :param T_b: brightness temperature [K]
+    :param T_RJ: RJ temperature [K]
     :return: T [K]
     """
 
-    x_b = h_over_k * nu / T_b  # nu [GHz] ; t [#K]
-    g = x_b / np.log1p(x_b)
-    return g * T_b
+    x_RJ = h_over_k * nu / T_RJ  # nu [GHz] ; t [#K]
+    g = x_RJ / np.log1p(x_RJ)
+    return g * T_RJ
 
 
 # =================================
@@ -216,9 +216,9 @@ def T_bright2thermo(nu, T_b):
 #       e.g.: dI_nu = diff_black_body(nu, T0)* dT/T0
 
 
-# -------------------
-# dT or dT_b to dI_nu
-# -------------------
+# --------------------
+# dT or dT_RJ to dI_nu
+# --------------------
 
 def diff_black_body(nu, T, RJ=False):
     """
@@ -227,7 +227,7 @@ def diff_black_body(nu, T, RJ=False):
 
     :param nu: observed frequency [GHz]
     :param T: thermodynamic temperature [K]
-    :param RJ: if True, input is brightness temperature
+    :param RJ: if True, input is RJ temperature
     :return: dI_nu*T/dT [MJy/sr]
     """
 
@@ -241,20 +241,20 @@ def diff_black_body(nu, T, RJ=False):
         return 2 * k3_over_c2h2 * T ** 3 * f
 
 
-# --------------------
-# dI_nu to dT and dT_b
-# --------------------
+# ---------------------
+# dI_nu to dT and dT_RJ
+# ---------------------
 
 def diff_bright_temp(nu, I_nu, RJ=False):
     """
     differential thermodynamic temperature dT [K] at frequency nu [GHz] for the observed
     intensity [MJy/sr]
-    if RJ==True, return differential brightness temperature
-    ***multiply by dI_nu/I_nu0 to get dT or dT_b***
+    if RJ==True, return differential RJ temperature
+    ***multiply by dI_nu/I_nu0 to get dT or dT_RJ***
 
     :param nu: observed frequency [GHz]
     :param I_nu: specific intensity [MJy/sr]
-    :param RJ: if True, output is brightness temperature
+    :param RJ: if True, output is RJ temperature
     :return: dT*I_nu0/dI_nu  [K]
     """
 
@@ -267,18 +267,18 @@ def diff_bright_temp(nu, I_nu, RJ=False):
         return 2 * h_over_k * h_over_c2 * nu ** 4 / I_nu / (1 + X) / np.log(1 + X) ** 2
 
 
-# ----------
-# dT to dT_b
-# ----------
+# -----------
+# dT to dT_RJ
+# -----------
 
-def dT_thermo2bright(nu, T):
+def dT_bright2RJ(nu, T):
     """the frequency function for converting thermodynamic temperature fluctuation
-    to the frequency dependent brightness temperature fluctuation.
-    ***Multiply by dT/T to get dT_b***
+    to the frequency dependent RJ temperature fluctuation.
+    ***Multiply by dT/T to get dT_RJ***
 
     :param nu: observed frequency [GHz]
     :param T: thermodynamic temperature [K]
-    :return: dT_b*T/dT  [K]
+    :return: dT_RJ*T/dT  [K]
     """
 
     x = h_over_k * nu / T  # nu [GHz] ; t [#K]
@@ -292,21 +292,21 @@ def dT_thermo2bright(nu, T):
 # dTb to dT
 # ----------
 
-def dT_bright2thermo(nu, T_b):
+def dT_RJ2bright(nu, T_RJ):
     """the frequency function for converting thermodynamic temperature fluctuation
-    to the frequency dependent brightness temperature fluctuation.
-    ***Multiply by dT/T to get dT_b***
+    to the frequency dependent RJ temperature fluctuation.
+    ***Multiply by dT/T to get dT_RJ***
 
     :param nu: observed frequency [GHz]
     :param T_b: brightness temperature [K]
-    :return: dT*T_b/dT_b  [K]
+    :return: dT*T_RJ/dT_RJ  [K]
     """
 
-    x_b = h_over_k * nu / T_b  # nu [GHz] ; t [#K]
+    x_RJ = h_over_k * nu / T_RJ  # nu [GHz] ; t [#K]
 
-    g = x_b / (1+x_b) / np.log1p(x_b)
+    g = x_RJ / (1+x_RJ) / np.log1p(x_RJ)
 
-    return g * T_b
+    return g * T_RJ
 
 
 ##################################################
@@ -334,39 +334,39 @@ def _convert_I_2_T(nu, I_nu, verbose=True):
     T = bright_temp(nu, I_nu, RJ=False)
     return T
 
-# ---------
-# Tb & I_nu
-# ---------
+# ----------
+# TRJ & I_nu
+# ----------
 
-def _convert_Tb_2_I(nu, T_b, verbose=True):
+def _convert_T_RJ_2_I(nu, T_RJ, verbose=True):
     if verbose:
-        print(converting_message("Tb","I"))
-    I_nu = black_body(nu, T_b, RJ=True)
+        print(converting_message("T_RJ","I"))
+    I_nu = black_body(nu, T_RJ, RJ=True)
     return I_nu
 
 
-def _convert_I_2_Tb(nu, I_nu, verbose=True):
+def _convert_I_2_T_RJ(nu, I_nu, verbose=True):
     if verbose:
-        print(converting_message("I","Tb"))
-    T_b = bright_temp(nu, I_nu, RJ=True)
-    return T_b
+        print(converting_message("I","T_RJ"))
+    T_RJ = bright_temp(nu, I_nu, RJ=True)
+    return T_RJ
 
 
 # --------
-# T & T_b
+# T & T_RJ
 # --------
 
-def _convert_T_2_Tb(nu, T, verbose=True):
+def _convert_T_2_T_RJ(nu, T, verbose=True):
     if verbose:
-        print(converting_message("T","Tb"))
-    T_b = T_thermo2bright(nu, T)
-    return T_b
+        print(converting_message("T","T_RJ"))
+    T_RJ = T_bright2RJ(nu, T)
+    return T_RJ
 
 
-def _convert_Tb_2_T(nu, T_b, verbose=True):
+def _convert_T_RJ_2_T(nu, T_RJ, verbose=True):
     if verbose:
-        print(converting_message("Tb","T"))
-    T = T_bright2thermo(nu, T_b)
+        print(converting_message("T_RJ","T"))
+    T = T_RJ2bright(nu, T_RJ)
     return T
 
 # =================================
@@ -392,43 +392,43 @@ def _convert_dI_2_dT(nu, dI_nu, I_nu0, verbose=True):
     dT = diff_bright_temp(nu, I_nu0, RJ=False) * dI_ovr_I0
     return dT
 
-# -----------
-# dTb & dI_nu
-# -----------
+# -------------
+# dT_RJ & dI_nu
+# -------------
 
-# NOTE: These two conversions don't necessarily need T_b0 or I_nu0
-def _convert_dTb_2_dI(nu, dT_b, T_b0=1, verbose=True):
+# NOTE: Due to their linear nature, these two conversions don't need T_b0 or I_nu0
+def _convert_dT_RJ_2_dI(nu, dT_RJ, T_RJ0=1, verbose=True):
     if verbose:
-        print(converting_message("dTb","dI"))
-    dTb_ovr_Tb0 = dT_b / T_b0
-    dI_nu = diff_black_body(nu, T_b0, RJ=True) * dTb_ovr_Tb0
+        print(converting_message("dT_RJ","dI"))
+    dT_RJ_ovr_T_RJ0 = dT_RJ / T_RJ0
+    dI_nu = diff_black_body(nu, T_RJ0, RJ=True) * dT_RJ_ovr_T_RJ0
     return dI_nu
 
 
-def _convert_dI_2_dTb(nu, dI_nu, I_nu0=1, verbose=True):
+def _convert_dI_2_dT_RJ(nu, dI_nu, I_nu0=1, verbose=True):
     if verbose:
-        print(converting_message("dI","dTb"))
+        print(converting_message("dI","dT_RJ"))
     dI_ovr_I0 = dI_nu / I_nu0
-    dT_b = diff_bright_temp(nu, I_nu0, RJ=True) * dI_ovr_I0
-    return dT_b
+    dT_RJ = diff_bright_temp(nu, I_nu0, RJ=True) * dI_ovr_I0
+    return dT_RJ
 
-# --------
-# dTb & dT
-# --------
+# ----------
+# dT_RJ & dT
+# ----------
 
-def _convert_dT_2_dTb(nu, dT, T0, verbose=True):
+def _convert_dT_2_dT_RJ(nu, dT, T0, verbose=True):
     if verbose:
-        print(converting_message("dT","dTb"))
+        print(converting_message("dT","dT_RJ"))
     dT_ovr_T0 = dT / T0
-    dT_b = dT_thermo2bright(nu, T0) * dT_ovr_T0
-    return dT_b
+    dT_RJ = dT_bright2RJ(nu, T0) * dT_ovr_T0
+    return dT_RJ
 
 
-def _convert_dTb_2_dT(nu, dT_b, T_b0, verbose=True):
+def _convert_dT_RJ_2_dT(nu, dT_RJ, T_RJ0, verbose=True):
     if verbose:
-        print(converting_message("dTb","dT"))
-    dTb_ovr_Tb0 = dT_b / T_b0
-    dT = dT_bright2thermo(nu, T_b0) * dTb_ovr_Tb0
+        print(converting_message("dT_RJ","dT"))
+    dT_RJ_ovr_T_RJ0 = dT_RJ / T_RJ0
+    dT = dT_RJ2bright(nu, T_RJ0) * dT_RJ_ovr_T_RJ0
     return dT
 
 
@@ -438,20 +438,20 @@ def _convert_dTb_2_dT(nu, dT_b, T_b0, verbose=True):
 
 def converting_message(unit1_str, unit2_str):
 
-    comments = {"T" : "T: thermodynamic (T)emperature",
+    comments = {"T" : "T: brightness (T)emperature",
                 "I" : "I: specific (I)ntensity",
-                "Tb": "Tb: (b)rightness (T)emperature",
-                "dT" : "dT: (d)ifferential thermodynamic (T)emperature",
+                "T_RJ": "T_RJ: (R)ayleigh-(J)eans (T)emperature",
+                "dT" : "dT: (d)ifferential brightness (T)emperature",
                 "dI" : "dI: (d)ifferential specific (I)ntensity",
-                "dTb": "dTb: (d)ifferential (b)rightness (T)emperature"
+                "dT_RJ": "dT_RJ: (d)ifferential (R)ayleigh-(J)eans (T)emperature"
                 }
 
     units = {"T" : "K",
              "I" : "MJy/sr",
-             "Tb": "K_RJ",
+             "T_RJ": "K_RJ",
              "dT" : "K",
              "dI" : "MJy/sr",
-             "dTb": "K_RJ",
+             "dT_RJ": "K_RJ",
               }
 
     return ("\nconverting {} [{}] to {} [{}]\n".format(unit1_str,
@@ -466,13 +466,13 @@ def _convert_abs_unit_of(map_, from_, to_, nu_,verbose):
     """call the absolyte conversion function"""
 
     conversion_dict = {"T_2_I" : _convert_T_2_I,
-                       "T_2_Tb": _convert_T_2_Tb,
+                       "T_2_T_RJ": _convert_T_2_T_RJ,
 
                        "I_2_T" : _convert_I_2_T,
-                       "I_2_Tb": _convert_I_2_Tb,
+                       "I_2_TRJ": _convert_I_2_T_RJ,
 
-                       "Tb_2_T": _convert_Tb_2_T,
-                       "Tb_2_I": _convert_T_2_I,
+                       "T_RJ_2_T": _convert_T_RJ_2_T,
+                       "T_RJ_2_I": _convert_T_2_I,
                        }
 
     return conversion_dict.get("{}_2_{}".format(from_, to_))(nu_, map_, verbose)
@@ -482,13 +482,13 @@ def _convert_diff_unit_of(map_, from_, to_, nu_, map_avg, verbose):
     """call the differential conversion function"""
 
     conversion_dict = {"dT_2_dI" : _convert_dT_2_dI,
-                       "dT_2_dTb": _convert_dT_2_dTb,
+                       "dT_2_dT_RJ": _convert_dT_2_dT_RJ,
 
                        "dI_2_dT" : _convert_dI_2_dT,
-                       "dI_2_dTb": _convert_dI_2_dTb,
+                       "dI_2_dT_RJ": _convert_dI_2_dT_RJ,
 
-                       "dTb_2_dT": _convert_dTb_2_dT,
-                       "dTb_2_dI": _convert_dT_2_dI,
+                       "dT_RJ_2_dT": _convert_dT_RJ_2_dT,
+                       "dT_RJ_2_dI": _convert_dT_2_dI,
                        }
     return conversion_dict.get("d{}_2_d{}".format(from_, to_))(nu_, map_, map_avg, verbose)
 
@@ -496,12 +496,19 @@ def _convert_diff_unit_of(map_, from_, to_, nu_, map_avg, verbose):
 def lookup(unit_str):
     """look up the input keyword in the dictionary and return the standard synonym"""
 
-    unit_dict = {"T": ["T", "T_cmb", "T_CMB", "K", "K_CMB"],
-                 "Tb": ["Tb", "T_RJ", "T_nu", "K_RJ"],
+    unit_dict = {"T": ["T", "T_b", "T_cmb", "T_CMB", "K", "K_CMB"],
+                 "T_RJ": ["T_rj", "T_RJ", "s_nu", "K_RJ"],
                  "I": ["I", "I_nu", "MJy/sr"]
                  }
 
-    unit_synonym = [key for key, value in unit_dict.items() if unit_str in value][0]
+    try:
+        unit_synonym = [key for key, value in unit_dict.items() if unit_str in value][0]
+        print("unit_syn=",unit_synonym)
+    except IndexError:
+        import pprint
+        pprint.pprint("Use a valid keyword from:\n")
+        pprint.pprint(unit_dict)
+        raise
 
     return unit_synonym
 
@@ -528,12 +535,12 @@ if __name__ == "__main__":
                              with_map_avg=T_0,
                              is_differential=True)
 
-    T_b = convert_units_of(T_0, from_units="T", to_units="Tb",
+    T_b = convert_units_of(T_0, from_units="T", to_units="T_RJ",
                            at_nu=nu_arr,
                            with_map_avg=None,
                            is_differential=False)
 
-    dT_b = convert_units_of(dT, from_units="T", to_units="Tb",
+    dT_b = convert_units_of(dT, from_units="T", to_units="T_RJ",
                              at_nu=nu_arr,
                              with_map_avg=T_0,
                              is_differential=True)
@@ -543,8 +550,8 @@ if __name__ == "__main__":
 
     axis[0,0].plot(nu_arr,I_nu,label="I_nu [MJy/sr]")
     axis[0,1].plot(nu_arr,dI_nu,label="dI_nu [MJy/sr]")
-    axis[1,0].semilogx(nu_arr,T_b,label="T_b [K_RJ]")
-    axis[1,1].semilogx(nu_arr,dT_b,label="dT_b [K_RJ]")
+    axis[1,0].semilogx(nu_arr,T_b,label="T_RJ [K_RJ]")
+    axis[1,1].semilogx(nu_arr,dT_b,label="dT_RJ [K_RJ]")
 
     fig.suptitle("T = {}, dT = {}".format(T_0,dT),y =1)
 
