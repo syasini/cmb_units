@@ -35,16 +35,17 @@ def convert_units_of(input_map,
     ----------
     input_map:
         input map or pixel
+        must be either a scalar or a list or np.ndarray of pixel values
 
     from_units:
         the units of input map. can be one of the keywords below:
 
-        "T" or: "T_cmb", "T_CMB", "K", "K_CMB";
-        "Tb" or: "T_RJ", "T_nu", "K_RJ";
+        "T" or: "T_b", "T_cmb", "T_CMB", "K", "K_CMB";
+        "T_RJ" or: "T_rj", "s_nu", "K_RJ", "K_rj";
         "I" or: "I_nu", "MJy/sr"
 
     to_units:
-        the units of the output map (can be "T", "T_b" or "I"); see above for
+        the units of the output map (can be "T", "T_RJ" or "I"); see above for
         equivalent keywords
 
     at_nu:
@@ -82,6 +83,8 @@ def convert_units_of(input_map,
 
     if np.isscalar(input_map):
         npix = 1
+
+    #FIXME: include multifrequency input maps
     elif isinstance(input_map,(list,np.ndarray)):
         npix = len(input_map)
         input_map = np.array(input_map)
@@ -89,7 +92,8 @@ def convert_units_of(input_map,
         raise TypeError("input_map must be either a scalar, list, or np.ndarray")
 
     #the input frequency must be either a scalar or a 1d array
-    assert np.ndim(at_nu)<2
+    assert np.ndim(at_nu)<2, "The dimension of input frequency must be smaller than 2 (only " \
+                             "scalar or vector)"
 
     if np.isscalar(at_nu):
         n_freq = 1
@@ -106,7 +110,7 @@ def convert_units_of(input_map,
         print("returning the original input.\n")
         return input_map
 
-    # check if the conversion if for differential or absolute measurements
+    # check if the conversion is for differential or absolute measurements
     if is_differential:
         return _convert_diff_unit_of(input_map, from_units, to_units, at_nu, with_map_avg, verbose)
     else:
