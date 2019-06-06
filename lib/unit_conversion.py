@@ -1,5 +1,6 @@
 """
-A module for converting Intensity, thermodynamic and brightness temperature of black body radiation
+A library for converting Intensity, brightness and Rayleigh_jeans temperature of black body
+radiation
 """
 
 __author__ = "Siavash Yasini"
@@ -503,10 +504,10 @@ def lookup(unit_str):
 
     try:
         unit_synonym = [key for key, value in unit_dict.items() if unit_str in value][0]
-        print("unit_syn=",unit_synonym)
+
     except IndexError:
         import pprint
-        pprint.pprint("Use a valid keyword from:\n")
+        pprint.pprint("Use a valid keyword from:")
         pprint.pprint(unit_dict)
         raise
 
