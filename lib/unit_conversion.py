@@ -126,9 +126,9 @@ def convert_units_of(input_map,
 #         Absolute Measurement
 # =================================
 
-# ---------------
+# -----------------
 # T or T_RJ to I_nu
-# ---------------
+# -----------------
 
 def black_body(nu, T, RJ=False):
     """
@@ -149,9 +149,9 @@ def black_body(nu, T, RJ=False):
         return 2 * k3_over_c2h2 * T ** 3 * g
 
 
-# -----------------
+# ------------------
 # I_nu to T and T_RJ
-# -----------------
+# ------------------
 
 def bright_temp(nu, I_nu, RJ=False):
     """
@@ -190,7 +190,7 @@ def T_bright2RJ(nu, T):
 
 
 # ---------
-# T_b to T
+# T_RJ to T
 # ---------
 
 def T_RJ2bright(nu, T_RJ):
@@ -289,9 +289,9 @@ def dT_bright2RJ(nu, T):
     return g * T
 
 
-# ----------
-# dTb to dT
-# ----------
+# -----------
+# dT_RJ to dT
+# -----------
 
 def dT_RJ2bright(nu, T_RJ):
     """the frequency function for converting thermodynamic temperature fluctuation
@@ -311,7 +311,7 @@ def dT_RJ2bright(nu, T_RJ):
 
 
 ##################################################
-#         T, Tb, & I Conversion Wrappers
+#         T, T_RJ, & I Conversion Wrappers
 ##################################################
 
 # =================================
@@ -335,9 +335,9 @@ def _convert_I_2_T(nu, I_nu, verbose=True):
     T = bright_temp(nu, I_nu, RJ=False)
     return T
 
-# ----------
-# TRJ & I_nu
-# ----------
+# -----------
+# T_RJ & I_nu
+# -----------
 
 def _convert_T_RJ_2_I(nu, T_RJ, verbose=True):
     if verbose:
@@ -525,7 +525,7 @@ if __name__ == "__main__":
     #set the frequency range
     nu_arr = np.linspace(1,1000,1000)
 
-    # convert T and dT to I, dI, Tb & dTb
+    # convert T and dT to I, dI, T_RJ & dTRJ
     I_nu = convert_units_of(T_0, from_units="T", to_units="I",
                             at_nu=nu_arr,
                             with_map_avg=None,
