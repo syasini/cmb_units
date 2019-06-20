@@ -274,11 +274,11 @@ def diff_bright_temp(nu, I_nu, RJ=False):
 
 def dT_bright2RJ(nu, T):
     """the frequency function for converting thermodynamic temperature fluctuation
-    to the frequency dependent RJ temperature fluctuation.
+    to RJ temperature fluctuation.
     ***Multiply by dT/T to get dT_RJ***
 
     :param nu: observed frequency [GHz]
-    :param T: thermodynamic temperature [K]
+    :param T: brightness temperature [K]
     :return: dT_RJ*T/dT  [K]
     """
 
@@ -294,18 +294,18 @@ def dT_bright2RJ(nu, T):
 # -----------
 
 def dT_RJ2bright(nu, T_RJ):
-    """the frequency function for converting thermodynamic temperature fluctuation
-    to the frequency dependent RJ temperature fluctuation.
+    """the frequency function for converting RJ temperature fluctuation
+    to the brightness temperature fluctuation.
     ***Multiply by dT/T to get dT_RJ***
 
     :param nu: observed frequency [GHz]
-    :param T_b: brightness temperature [K]
+    :param T_RJ: RJ temperature [K]
     :return: dT*T_RJ/dT_RJ  [K]
     """
 
     x_RJ = h_over_k * nu / T_RJ  # nu [GHz] ; t [#K]
 
-    g = x_RJ / (1+x_RJ) / np.log1p(x_RJ)
+    g = x_RJ**2 / (1+x_RJ) / np.log1p(x_RJ)**2
 
     return g * T_RJ
 
@@ -416,7 +416,7 @@ def _convert_dI_2_dT_RJ(nu, dI_nu, I_nu0=1, verbose=True):
 # ----------
 # dT_RJ & dT
 # ----------
-
+# TODO: Fix the bug in dT_RJ to dT conversion
 def _convert_dT_2_dT_RJ(nu, dT, T0, verbose=True):
     if verbose:
         print(converting_message("dT","dT_RJ"))
@@ -473,7 +473,7 @@ def _convert_abs_unit_of(map_, from_, to_, nu_,verbose):
                        "I_2_TRJ": _convert_I_2_T_RJ,
 
                        "T_RJ_2_T": _convert_T_RJ_2_T,
-                       "T_RJ_2_I": _convert_T_2_I,
+                       "T_RJ_2_I": _convert_T_RJ_2_I,
                        }
 
     return conversion_dict.get("{}_2_{}".format(from_, to_))(nu_, map_, verbose)
@@ -482,14 +482,14 @@ def _convert_abs_unit_of(map_, from_, to_, nu_,verbose):
 def _convert_diff_unit_of(map_, from_, to_, nu_, map_avg, verbose):
     """call the differential conversion function"""
 
-    conversion_dict = {"dT_2_dI" : _convert_dT_2_dI,
+    conversion_dict = {"dT_2_dI": _convert_dT_2_dI,
                        "dT_2_dT_RJ": _convert_dT_2_dT_RJ,
 
-                       "dI_2_dT" : _convert_dI_2_dT,
+                       "dI_2_dT": _convert_dI_2_dT,
                        "dI_2_dT_RJ": _convert_dI_2_dT_RJ,
 
                        "dT_RJ_2_dT": _convert_dT_RJ_2_dT,
-                       "dT_RJ_2_dI": _convert_dT_2_dI,
+                       "dT_RJ_2_dI": _convert_dT_RJ_2_dI,
                        }
     return conversion_dict.get("d{}_2_d{}".format(from_, to_))(nu_, map_, map_avg, verbose)
 
@@ -519,8 +519,8 @@ if __name__ == "__main__":
     print("\nrunning some test conversions\n{:=<30}".format(""))
 
     # set the thermodynamic temperature
-    T_0 = 2.7255 # [K]
-    dT = 1E-5 # [K]
+    T_0 = 2.7255  # [K]
+    dT = 1E-5  # [K]
 
     #set the frequency range
     nu_arr = np.linspace(1,1000,1000)
